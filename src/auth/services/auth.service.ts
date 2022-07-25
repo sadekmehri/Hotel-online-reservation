@@ -1,7 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
 import { Jwt } from 'src/common/constants'
-import { Partial, UserModel } from 'src/common/models'
 import { compareHashToText, hash } from 'src/common/utils/bcrypt.util'
 import { parseStringToDate } from 'src/common/utils/date.util'
 import { PrismaService } from 'src/prisma/prisma.service'
@@ -16,9 +15,7 @@ export class AuthService {
   ) {}
 
   /* Register new user */
-  async register(
-    registerAuthDto: RegisterAuthDto,
-  ): Promise<Partial<UserModel>> {
+  async register(registerAuthDto: RegisterAuthDto): Promise<GetUserDto> {
     const { email, cin, dob, password } = registerAuthDto
 
     // Check if the user's cin number exists or not

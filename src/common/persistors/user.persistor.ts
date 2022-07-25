@@ -1,20 +1,22 @@
 import { Inject, Injectable } from '@nestjs/common'
 import { PrismaService } from 'src/prisma/prisma.service'
 import { UserFactory } from '../factory'
-import { IFactory, IPersist } from '../interfaces'
-import { Partial, UserModel } from '../models'
+import { FactoryTypes, IPersist } from '../types'
+import { UserModel } from '../models'
 import { randomNumber } from '../utils/random.util'
+
+const { IUserFactory } = FactoryTypes
 
 @Injectable()
 export class UserPersistor implements IPersist<Partial<UserModel>> {
   constructor(
     private readonly prismaService: PrismaService,
-    @Inject(IFactory)
+    @Inject(IUserFactory)
     private readonly userFactory: UserFactory,
   ) {}
 
   /* Insert users data to database */
-  async insert(limit: number = 10): Promise<Partial<UserModel>[]> {
+  async insert(limit: number = 10): Promise<UserModel[]> {
     const users: UserModel[] = <UserModel[]>(
       await this.userFactory.generate(limit)
     )

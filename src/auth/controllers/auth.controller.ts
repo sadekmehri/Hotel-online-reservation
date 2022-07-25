@@ -18,7 +18,6 @@ import {
 import { GetCurrentAuth, GetCurrentAuthId, Public } from 'src/common/decorators'
 import { RefreshTokenGuard } from 'src/common/guards'
 import { TransformInterceptor } from 'src/common/interceptors/dto.interceptor'
-import { Partial, UserModel } from 'src/common/models'
 import { GetUserDto, LoginAuthDto, RegisterAuthDto } from '../dtos'
 import { AuthService } from '../services/auth.service'
 import { Tokens } from '../types'
@@ -47,9 +46,7 @@ export class AuthController {
     status: HttpStatus.BAD_REQUEST,
     description: 'Form validation errors',
   })
-  register(
-    @Body() registerAuthDto: RegisterAuthDto,
-  ): Promise<Partial<UserModel>> {
+  register(@Body() registerAuthDto: RegisterAuthDto): Promise<GetUserDto> {
     return this.authService.register(registerAuthDto)
   }
 

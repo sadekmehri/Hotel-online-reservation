@@ -1,7 +1,7 @@
 import { faker } from '@faker-js/faker'
 import { Injectable } from '@nestjs/common'
-import { IFactory } from '../interfaces/IFactory'
-import { Partial, UserModel } from '../models'
+import { IFactory } from '../types/IFactory'
+import { UserModel } from '../models'
 import { hash } from '../utils/bcrypt.util'
 
 @Injectable()

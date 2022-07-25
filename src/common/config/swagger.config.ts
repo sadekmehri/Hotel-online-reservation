@@ -11,7 +11,6 @@ export = (app: NestExpressApplication): void => {
     .setTitle(Swagger.TITLE)
     .setDescription(Swagger.DESCRIPTION)
     .setVersion(Swagger.VERSION)
-    .setBasePath(Swagger.BASE_PATH)
     .addBearerAuth()
     .build()
 

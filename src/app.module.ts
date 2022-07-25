@@ -11,6 +11,7 @@ import {
 } from './common/filters'
 import { AccessTokenGuard } from './common/guards'
 import { PrismaModule } from './prisma/prisma.module'
+import { RoomTypeModule } from './room-type/room-type.module'
 import { SeederModule } from './seeder/seeder.module'
 
 const envFilePath: string = getEnvPath(Path.ROOT_PATH)
@@ -20,25 +21,14 @@ const envFilePath: string = getEnvPath(Path.ROOT_PATH)
     ConfigModule.forRoot({ envFilePath, isGlobal: true }),
     PrismaModule,
     AuthModule,
+    RoomTypeModule,
     SeederModule,
   ],
   providers: [
-    {
-      provide: APP_FILTER,
-      useClass: HttpExceptionFilter,
-    },
-    {
-      provide: APP_FILTER,
-      useClass: NotFoundExceptionFilter,
-    },
-    {
-      provide: APP_FILTER,
-      useClass: InternalServerErrorExceptionFilter,
-    },
-    {
-      provide: APP_GUARD,
-      useClass: AccessTokenGuard,
-    },
+    { provide: APP_FILTER, useClass: HttpExceptionFilter },
+    { provide: APP_FILTER, useClass: NotFoundExceptionFilter },
+    { provide: APP_FILTER, useClass: InternalServerErrorExceptionFilter },
+    { provide: APP_GUARD, useClass: AccessTokenGuard },
   ],
 })
 export class AppModule {}

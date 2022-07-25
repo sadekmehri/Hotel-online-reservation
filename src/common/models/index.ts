@@ -1,2 +1,3 @@
 export { UserModel } from './user.model'
-export { Partial } from './partial.model'
+export { RoomModel } from './room.model'
+export { RoomTypeModel } from './room-type.model'
