@@ -5,7 +5,7 @@ import { DateFormat } from '../constants/date.enum'
 export const getCurrentDate = (
   dateFormat: string = DateFormat.DATE,
 ): string => {
-  return moment().utc().format(dateFormat)
+  return moment().format(dateFormat)
 }
 
 /* Check if the current date string is a valid date or not by using a given format */

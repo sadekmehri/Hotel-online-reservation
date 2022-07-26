@@ -5,7 +5,7 @@ import { compareHashToText, hash } from 'src/common/utils/bcrypt.util'
 import { parseStringToDate } from 'src/common/utils/date.util'
 import { PrismaService } from 'src/prisma/prisma.service'
 import { GetUserDto, LoginAuthDto, RegisterAuthDto } from '../dtos'
-import { JwtPayload, Tokens } from '../types'
+import { JwtOptions, JwtPayload, Tokens } from '../types'
 
 @Injectable()
 export class AuthService {
@@ -194,9 +194,21 @@ export class AuthService {
 
   /* Generate access token and refresh token */
   private async generateTokens(userId: number, email: string): Promise<Tokens> {
+    // Access token options
+    const accessTokenOptions: JwtOptions = {
+      secret: Jwt.ACCESS_TOKEN_SECRET,
+      expiresIn: Jwt.EXPIRES_IN_ACCESS_TOKEN,
+    }
+
+    // refresh token options
+    const refreshTokenOptions: JwtOptions = {
+      secret: Jwt.REFRESH_TOKEN_SECRET,
+      expiresIn: Jwt.EXPIRES_IN_REFRESH_TOKEN,
+    }
+
     const [accessToken, refreshToken] = await Promise.all([
-      this.signAccessToken(userId, email),
-      this.signRefreshToken(userId, email),
+      this.signToken(userId, email, accessTokenOptions),
+      this.signToken(userId, email, refreshTokenOptions),
     ])
 
     return {
@@ -205,30 +217,18 @@ export class AuthService {
     }
   }
 
-  /* Sign for access token */
-  private signAccessToken(userId: number, email: string): Promise<string> {
+  /* Sign for token */
+  private signToken(
+    userId: number,
+    email: string,
+    options: JwtOptions,
+  ): Promise<string> {
     const jwtPayload: JwtPayload = {
       userId: userId,
       email: email,
     }
 
-    return this.jwtService.signAsync(jwtPayload, {
-      secret: Jwt.ACCESS_TOKEN_SECRET,
-      expiresIn: Jwt.EXPIRES_IN_ACCESS_TOKEN,
-    })
-  }
-
-  /* Sign for refresh token */
-  private signRefreshToken(userId: number, email: string): Promise<string> {
-    const jwtPayload: JwtPayload = {
-      userId: userId,
-      email: email,
-    }
-
-    return this.jwtService.signAsync(jwtPayload, {
-      secret: Jwt.REFRESH_TOKEN_SECRET,
-      expiresIn: Jwt.EXPIRES_IN_REFRESH_TOKEN,
-    })
+    return this.jwtService.signAsync(jwtPayload, options)
   }
 
   /* Update refresh token field after user registration */

@@ -1,8 +1,8 @@
 export interface RoomModel {
-  roomId: number
+  readonly roomId?: number
   code: string
-  status: boolean
-  reserved: boolean
+  status?: boolean
+  reserved?: boolean
   price: number
   roomTypeId: number
 }

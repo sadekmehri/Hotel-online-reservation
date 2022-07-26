@@ -1,14 +1,14 @@
 import { faker } from '@faker-js/faker'
 import { Injectable } from '@nestjs/common'
-import { IFactory } from '../types/IFactory'
+import { IFactory } from '../types/IFactory.type'
 import { RoomTypeModel } from '../models'
 
 @Injectable()
-export class RoomTypeFactory implements IFactory<Partial<RoomTypeModel>> {
+export class RoomTypeFactory implements IFactory<RoomTypeModel> {
   /* Generate random room-types records */
-  async generate(limit: number = 10): Promise<Partial<RoomTypeModel>[]> {
-    const roomTypes: Partial<RoomTypeModel>[] = []
-    let roomType: Partial<RoomTypeModel>
+  async generate(limit: number = 10): Promise<RoomTypeModel[]> {
+    const roomTypes: RoomTypeModel[] = []
+    let roomType: RoomTypeModel
 
     for (let i = 0; i < limit; i++) {
       roomType = await this.create()
@@ -19,9 +19,9 @@ export class RoomTypeFactory implements IFactory<Partial<RoomTypeModel>> {
   }
 
   /* Create single room-type record */
-  async create(): Promise<Partial<RoomTypeModel>> {
+  async create(): Promise<RoomTypeModel> {
     return {
-      description: faker.lorem.sentence(3),
+      description: faker.lorem.word(4),
     }
   }
 }

@@ -1,3 +1,4 @@
+import { ValidationPipe } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { NestFactory } from '@nestjs/core'
 import { NestExpressApplication } from '@nestjs/platform-express'
@@ -12,6 +13,12 @@ async function bootstrap() {
   app.disable('x-powered-by')
   app.enableCors(corsOptions)
   app.setGlobalPrefix('api/v1/')
+  app.useGlobalPipes(
+    new ValidationPipe({
+      transform: true,
+      transformOptions: { enableImplicitConversion: true },
+    }),
+  )
 
   require('./common/config/key.config')()
   require('./common/config/swagger.config')(app)

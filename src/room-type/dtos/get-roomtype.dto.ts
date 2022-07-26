@@ -1,4 +1,8 @@
+import { Expose } from 'class-transformer'
+
 export class GetRoomTypeDto {
-  roomTypeId: number
+  @Expose({ name: 'id' })
+  readonly roomTypeId: number
+
   description: string
 }

@@ -6,8 +6,6 @@ import {
   Post,
   UseGuards,
   UseInterceptors,
-  UsePipes,
-  ValidationPipe,
 } from '@nestjs/common'
 import {
   ApiBearerAuth,
@@ -17,9 +15,9 @@ import {
 } from '@nestjs/swagger'
 import { GetCurrentAuth, GetCurrentAuthId, Public } from 'src/common/decorators'
 import { RefreshTokenGuard } from 'src/common/guards'
-import { TransformInterceptor } from 'src/common/interceptors/dto.interceptor'
+import { TransformInterceptor } from 'src/common/interceptors'
 import { GetUserDto, LoginAuthDto, RegisterAuthDto } from '../dtos'
-import { AuthService } from '../services/auth.service'
+import { AuthService } from '../services'
 import { Tokens } from '../types'
 
 @ApiTags('Auth')
@@ -34,7 +32,6 @@ export class AuthController {
   @Public()
   @Post('/register')
   @HttpCode(HttpStatus.CREATED)
-  @UsePipes(ValidationPipe)
   @UseInterceptors(new TransformInterceptor(GetUserDto))
   @ApiOperation({ summary: 'Register feature' })
   @ApiResponse({
@@ -57,7 +54,6 @@ export class AuthController {
   @Public()
   @Post('/login')
   @HttpCode(HttpStatus.OK)
-  @UsePipes(ValidationPipe)
   @ApiOperation({ summary: 'Login feature' })
   @ApiResponse({
     status: HttpStatus.OK,

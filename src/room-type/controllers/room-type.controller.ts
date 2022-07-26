@@ -1,12 +1,8 @@
 import { Controller, Get, HttpCode, HttpStatus } from '@nestjs/common'
-import {
-  ApiBearerAuth,
-  ApiOperation,
-  ApiResponse,
-  ApiTags,
-} from '@nestjs/swagger'
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
+import { Public } from 'src/common/decorators'
 import { GetRoomTypeDto } from '../dtos'
-import { RoomTypeService } from '../services/room-type.service'
+import { RoomTypeService } from '../services'
 
 @ApiTags('Room-types')
 @Controller('room-types')
@@ -15,12 +11,12 @@ export class RoomTypeController {
 
   // @desc      Get list of room types records
   // @route     GET /room-types
-  // @access    Private
+  // @access    Public
 
+  @Public()
   @Get('/')
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Get list of room-types records' })
-  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Get list of room-types records feature' })
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'Return list of room-types records',
@@ -28,10 +24,6 @@ export class RoomTypeController {
   @ApiResponse({
     status: HttpStatus.NOT_FOUND,
     description: "There aren't room-types records",
-  })
-  @ApiResponse({
-    status: HttpStatus.UNAUTHORIZED,
-    description: 'Unauthorized',
   })
   getRoomTypes(): Promise<GetRoomTypeDto[]> {
     return this.roomTypeService.getRoomTypes()

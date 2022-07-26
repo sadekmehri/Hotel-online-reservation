@@ -13,9 +13,12 @@ export class RoomTypeService {
         roomTypeId: true,
         description: true,
       },
+      orderBy: {
+        roomTypeId: 'desc',
+      },
     })
 
-    /* Check if there is no record */
+    // Check if there is no record
     if (roomTypesRecords.length === 0)
       throw new HttpException(
         { message: `The are no room-types records!` },
@@ -23,5 +26,29 @@ export class RoomTypeService {
       )
 
     return roomTypesRecords
+  }
+
+  /* Get room type by id */
+  async getRoomTypeById(roomTypeId: number): Promise<GetRoomTypeDto> {
+    // Check if room type exists by giving its id
+    const roomType = await this.prismaService.roomtypes.findUnique({
+      where: {
+        roomTypeId,
+      },
+      select: {
+        roomTypeId: true,
+        description: true,
+      },
+    })
+
+    if (!roomType)
+      throw new HttpException(
+        {
+          message: `There is no room type record with this given id: ${roomTypeId}!`,
+        },
+        HttpStatus.NOT_FOUND,
+      )
+
+    return roomType
   }
 }

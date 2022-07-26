@@ -1,5 +1,5 @@
 export interface RoomTypeModel {
-  readonly roomTypeId: number
+  readonly roomTypeId?: number
   description: string
 }
 
