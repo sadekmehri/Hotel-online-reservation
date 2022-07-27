@@ -27,7 +27,6 @@ export class RoomController {
   @Public()
   @Get('/')
   @HttpCode(HttpStatus.OK)
-  @UseInterceptors(new TransformInterceptor(GetRoomDto))
   @ApiOperation({ summary: 'Get list of rooms feature' })
   @ApiResponse({
     status: HttpStatus.OK,

@@ -4,6 +4,7 @@ import { NestFactory } from '@nestjs/core'
 import { NestExpressApplication } from '@nestjs/platform-express'
 import { AppModule } from './app.module'
 import { corsOptions } from './common/config/cors.config'
+import { validationPipeOptions } from './common/config/validation-pipe.config'
 
 async function bootstrap() {
   const app: NestExpressApplication = await NestFactory.create(AppModule)
@@ -13,12 +14,7 @@ async function bootstrap() {
   app.disable('x-powered-by')
   app.enableCors(corsOptions)
   app.setGlobalPrefix('api/v1/')
-  app.useGlobalPipes(
-    new ValidationPipe({
-      transform: true,
-      transformOptions: { enableImplicitConversion: true },
-    }),
-  )
+  app.useGlobalPipes(new ValidationPipe(validationPipeOptions))
 
   require('./common/config/key.config')()
   require('./common/config/swagger.config')(app)

@@ -68,9 +68,12 @@ export class RoomService {
   async createRoom(createRoomDto: CreateRoomDto): Promise<GetRoomDto> {
     const { code, roomTypeId } = createRoomDto
 
-    const roomCode = `Room-${code}`
+    // Check if the room type exist by passing the id as param
+    await this.roomTypeService.getRoomTypeById(roomTypeId)
 
     // Check if the room code exists
+    const roomCode = `Room-${code}`
+
     const isRoomExistByCode = await this.prismaService.rooms.findUnique({
       where: {
         code: roomCode,
@@ -85,9 +88,6 @@ export class RoomService {
         { message: `The room code number was already taken!` },
         HttpStatus.BAD_REQUEST,
       )
-
-    // Check if the room type exist by passing the id as param
-    await this.roomTypeService.getRoomTypeById(roomTypeId)
 
     // Save new room to database
     const newRoom = await this.prismaService.rooms.create({
