@@ -72,9 +72,10 @@ CREATE TABLE IF NOT EXISTS `bills` (
 DROP TABLE IF EXISTS `cities`;
 CREATE TABLE IF NOT EXISTS `cities` (
   `cityId` smallint(5) UNSIGNED NOT NULL AUTO_INCREMENT,
-  `city` varchar(50) NOT NULL,
+  `name` varchar(50) NOT NULL,
   `countryId` smallint(5) UNSIGNED NOT NULL,
   PRIMARY KEY (`cityId`),
+  UNIQUE KEY `uc_city_name` (`name`),
   KEY `fk_city_country` (`countryId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 

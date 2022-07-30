@@ -40,7 +40,7 @@ model bills {
 
 model cities {
   cityId    Int         @id @default(autoincrement()) @db.UnsignedSmallInt
-  city      String      @db.VarChar(50)
+  name      String      @unique(map: "uc_city_name") @db.VarChar(50)
   countryId Int         @db.UnsignedSmallInt
   countries countries   @relation(fields: [countryId], references: [countryId], map: "fk_city_country")
   addresses addresses[]

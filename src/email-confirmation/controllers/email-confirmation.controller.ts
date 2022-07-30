@@ -6,16 +6,14 @@ import {
   HttpStatus,
   Post,
   Query,
-  Req
 } from '@nestjs/common'
 import {
   ApiBearerAuth,
   ApiOperation,
   ApiResponse,
-  ApiTags
+  ApiTags,
 } from '@nestjs/swagger'
 import { Throttle } from '@nestjs/throttler'
-import { Response } from 'express'
 import { DateMeasure, RateLimit } from 'src/common/constants'
 import { GetCurrentAuthId, Public } from 'src/common/decorators'
 import { SendEmailDto } from '../dtos'
@@ -27,7 +25,7 @@ import { EmailConfirmationService } from '../services/email-confirmation.service
 export class EmailConfirmationController {
   constructor(
     private readonly emailConfirmationService: EmailConfirmationService,
-  ) { }
+  ) {}
 
   // @desc      Send confirmation link
   // @route     POST /account/send-confirmation-link
@@ -47,11 +45,11 @@ export class EmailConfirmationController {
   })
   @ApiResponse({
     status: HttpStatus.TOO_MANY_REQUESTS,
-    description: 'Request has exceeded the limit',
+    description: 'You have reached the maximum request limit rate',
   })
   @ApiResponse({
-    status: HttpStatus.FAILED_DEPENDENCY,
-    description: 'Unable to send mail due to its configuration',
+    status: HttpStatus.MISDIRECTED,
+    description: 'Unable to send mail',
   })
   async send(@Body() sendEmailDto: SendEmailDto): Promise<void> {
     const { email } = sendEmailDto
@@ -76,7 +74,7 @@ export class EmailConfirmationController {
   })
   @ApiResponse({
     status: HttpStatus.TOO_MANY_REQUESTS,
-    description: 'Request has exceeded the limit',
+    description: 'You have reached the maximum request limit rate',
   })
   @ApiResponse({
     status: HttpStatus.FAILED_DEPENDENCY,
@@ -96,6 +94,10 @@ export class EmailConfirmationController {
   @Post('resend-confirmation-link')
   @HttpCode(HttpStatus.OK)
   @ApiBearerAuth()
+  @ApiResponse({
+    status: HttpStatus.TOO_MANY_REQUESTS,
+    description: 'You have reached the maximum request limit rate',
+  })
   @ApiOperation({ summary: 'Resend verification link feature' })
   async resend(@GetCurrentAuthId() userId: number): Promise<void> {
     await this.emailConfirmationService.resendConfirmationLink(userId)

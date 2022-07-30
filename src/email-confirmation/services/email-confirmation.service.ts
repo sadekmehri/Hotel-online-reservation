@@ -4,7 +4,6 @@ import {
   HttpException,
   HttpStatus,
   Injectable,
-  Logger
 } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
 import { AuthService } from 'src/auth/services/auth.service'
@@ -14,12 +13,11 @@ import { VerificationTokenPayload } from '../types'
 
 @Injectable()
 export class EmailConfirmationService {
-  private readonly logger = new Logger(EmailConfirmationService.name)
   constructor(
     private readonly jwtService: JwtService,
     private readonly emailService: EmailService,
     private readonly authService: AuthService,
-  ) { }
+  ) {}
 
   /* Send verification link throw email */
   async sendVerificationLink(email: string): Promise<void> {
@@ -40,16 +38,7 @@ export class EmailConfirmationService {
       },
     }
 
-    try {
-      await this.emailService.sendMail(options)
-    } catch (error: any) {
-      this.logger.error(error?.name)
-
-      throw new HttpException(
-        { message: `Something wrong happened when sending the email!` },
-        HttpStatus.FAILED_DEPENDENCY,
-      )
-    }
+    await this.emailService.sendMail(options)
   }
 
   /* Send verification process */
@@ -64,9 +53,7 @@ export class EmailConfirmationService {
 
     await this.sendVerificationLink(email)
 
-
     // `Your verification link was successfully send. Please check your mail account!`,
-
   }
 
   /* Resend confirmation request */
@@ -82,7 +69,6 @@ export class EmailConfirmationService {
       )
 
     await this.sendVerificationLink(email)
-
 
     // `Your verification was successfully send. Please check your mail account!`
   }

@@ -1,5 +1,5 @@
 import { ISendMailOptions, MailerService } from '@nestjs-modules/mailer'
-import { Injectable } from '@nestjs/common'
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common'
 
 @Injectable()
 export class EmailService {
@@ -7,6 +7,13 @@ export class EmailService {
 
   /* send email */
   async sendMail(options: ISendMailOptions) {
-    await this.mailerService.sendMail(options)
+    try {
+      await this.mailerService.sendMail(options)
+    } catch (error) {
+      throw new HttpException(
+        { message: `Something wrong happened when sending the email!` },
+        HttpStatus.MISDIRECTED,
+      )
+    }
   }
 }

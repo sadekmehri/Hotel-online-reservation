@@ -1,3 +1,5 @@
 export { UserModel } from './user.model'
 export { RoomModel } from './room.model'
 export { RoomTypeModel } from './room-type.model'
+export { CountryModel } from './country.model'
+export { CityModel } from './city.model'

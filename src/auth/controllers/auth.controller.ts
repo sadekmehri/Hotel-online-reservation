@@ -43,6 +43,10 @@ export class AuthController {
     status: HttpStatus.BAD_REQUEST,
     description: 'Form validation errors',
   })
+  @ApiResponse({
+    status: HttpStatus.TOO_MANY_REQUESTS,
+    description: 'You have reached the maximum request limit rate',
+  })
   register(@Body() registerAuthDto: RegisterAuthDto): Promise<GetUserDto> {
     return this.authService.register(registerAuthDto)
   }
@@ -62,6 +66,10 @@ export class AuthController {
   @ApiResponse({
     status: HttpStatus.BAD_REQUEST,
     description: 'Form validation errors',
+  })
+  @ApiResponse({
+    status: HttpStatus.TOO_MANY_REQUESTS,
+    description: 'You have reached the maximum request limit rate',
   })
   login(@Body() loginAuthDto: LoginAuthDto): Promise<Tokens> {
     return this.authService.login(loginAuthDto)
@@ -89,6 +97,10 @@ export class AuthController {
     status: HttpStatus.FORBIDDEN,
     description: 'The user has logged out and then call the refresh token',
   })
+  @ApiResponse({
+    status: HttpStatus.TOO_MANY_REQUESTS,
+    description: 'You have reached the maximum request limit rate',
+  })
   refreshToken(
     @GetCurrentAuthId() userId: number,
     @GetCurrentAuth('refreshToken') refreshToken: string,
@@ -114,6 +126,10 @@ export class AuthController {
     status: HttpStatus.UNAUTHORIZED,
     description: 'Unauthorized',
   })
+  @ApiResponse({
+    status: HttpStatus.TOO_MANY_REQUESTS,
+    description: 'You have reached the maximum request limit rate',
+  })
   getAuthInfo(@GetCurrentAuthId() userId: number): Promise<GetUserDto> {
     return this.authService.getAuthInfo(userId)
   }
@@ -133,6 +149,10 @@ export class AuthController {
   @ApiResponse({
     status: HttpStatus.UNAUTHORIZED,
     description: 'Unauthorized',
+  })
+  @ApiResponse({
+    status: HttpStatus.TOO_MANY_REQUESTS,
+    description: 'You have reached the maximum request limit rate',
   })
   logout(@GetCurrentAuthId() userId: number): Promise<void> {
     return this.authService.logout(userId)
