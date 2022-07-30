@@ -16,7 +16,8 @@ async function bootstrap() {
   app.setGlobalPrefix('api/v1/')
   app.useGlobalPipes(new ValidationPipe(validationPipeOptions))
 
-  require('./common/config/key.config')()
+  require('./common/config/jwt.config')()
+  require('./common/config/email.config')()
   require('./common/config/swagger.config')(app)
 
   await app.listen(port)

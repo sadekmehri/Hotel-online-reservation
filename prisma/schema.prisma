@@ -20,19 +20,10 @@ model addresses {
   phone      String   @unique(map: "uc_address_phone") @db.VarChar(20)
   createDate DateTime @default(now()) @db.DateTime(0)
   lastUpdate DateTime @default(now()) @db.Timestamp(0)
+  cities     cities   @relation(fields: [cityId], references: [cityId], map: "fk_address_city")
   users      users[]
 
   @@index([cityId], map: "fk_city_id")
-}
-
-model admins {
-  adminId    Int      @id @default(autoincrement())
-  firstName  String   @db.VarChar(100)
-  lastName   String   @db.VarChar(100)
-  email      String   @unique(map: "uc_admin_email") @db.VarChar(255)
-  password   String   @db.VarChar(255)
-  createDate DateTime @default(now()) @db.DateTime(0)
-  lastUpdate DateTime @default(now()) @db.Timestamp(0)
 }
 
 model bills {
@@ -48,16 +39,19 @@ model bills {
 }
 
 model cities {
-  cityId    Int    @id @default(autoincrement()) @db.UnsignedSmallInt
-  city      String @db.VarChar(50)
-  countryId Int    @db.UnsignedSmallInt
+  cityId    Int         @id @default(autoincrement()) @db.UnsignedSmallInt
+  city      String      @db.VarChar(50)
+  countryId Int         @db.UnsignedSmallInt
+  countries countries   @relation(fields: [countryId], references: [countryId], map: "fk_city_country")
+  addresses addresses[]
 
   @@index([countryId], map: "fk_city_country")
 }
 
 model countries {
-  countryId Int    @id @default(autoincrement()) @db.UnsignedSmallInt
-  name      String @unique(map: "uc_country_name") @db.VarChar(50)
+  countryId Int      @id @default(autoincrement()) @db.UnsignedSmallInt
+  name      String   @unique(map: "uc_country_name") @db.VarChar(50)
+  cities    cities[]
 }
 
 model payments {
@@ -141,9 +135,9 @@ model rooms {
 }
 
 model roomtypes {
-  roomTypeId  Int     @id @default(autoincrement())
-  description String  @db.VarChar(200)
-  rooms       rooms[]
+  roomTypeId Int     @id @default(autoincrement())
+  name       String  @unique(map: "uc_room_type_name") @db.VarChar(200)
+  rooms      rooms[]
 }
 
 model users {
@@ -151,12 +145,13 @@ model users {
   firstName        String         @db.VarChar(100)
   lastName         String         @db.VarChar(100)
   email            String         @unique(map: "uc_user_email") @db.VarChar(255)
-  cin              String         @unique(map: "uc_user_cin") @db.VarChar(100)
-  dob              DateTime       @db.Date
+  cin              String?        @unique(map: "uc_user_cin") @db.VarChar(100)
+  dob              DateTime?      @db.Date
   password         String         @db.VarChar(255)
   refreshToken     String?        @db.TinyText
   isEmailConfirmed Boolean        @default(false)
-  isActive         Boolean        @default(false)
+  isActive         Boolean        @default(true)
+  isAdmin          Boolean        @default(false)
   addressId        Int?           @db.UnsignedSmallInt
   createDate       DateTime       @default(now()) @db.DateTime(0)
   lastUpdate       DateTime       @default(now()) @db.Timestamp(0)

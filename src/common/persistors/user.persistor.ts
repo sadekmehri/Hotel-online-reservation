@@ -1,8 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common'
 import { PrismaService } from 'src/prisma/prisma.service'
-import { UserFactory } from '../factory'
 import { UserModel } from '../models'
-import { FactoryTypes, IPersist } from '../types'
+import { FactoryTypes, IFactory, IPersist } from '../types'
 import { randomNumber } from '../utils/random.util'
 
 const { IUserFactory } = FactoryTypes
@@ -12,7 +11,7 @@ export class UserPersistor implements IPersist<UserModel> {
   constructor(
     private readonly prismaService: PrismaService,
     @Inject(IUserFactory)
-    private readonly userFactory: UserFactory,
+    private readonly userFactory: IFactory<UserModel>,
   ) {}
 
   /* Insert users data to database */
@@ -31,6 +30,10 @@ export class UserPersistor implements IPersist<UserModel> {
     const skip: number = randomNumber(0, usersCount - 1)
 
     return await this.prismaService.users.findMany({
+      where: {
+        isActive: true,
+        isAdmin: false,
+      },
       take: limit,
       skip,
       select: {

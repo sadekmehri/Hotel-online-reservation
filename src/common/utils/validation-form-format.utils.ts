@@ -1,12 +1,12 @@
 import { BadRequestException } from '@nestjs/common'
 import { ValidationError } from 'class-validator'
-import { LooseObject } from '../types'
+import { ILooseObject } from '../types'
 
 /* Override the default reponse of class-validation */
 export const formatValidationFormResponse = (
   validationErrors: ValidationError[] = [],
 ): BadRequestException => {
-  const errObject: LooseObject = {}
+  const errObject: ILooseObject = {}
 
   const errResponse = validationErrors.reduce(
     (accumulator, validationError) => {

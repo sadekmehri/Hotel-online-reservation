@@ -17,7 +17,7 @@ import { GetCurrentAuth, GetCurrentAuthId, Public } from 'src/common/decorators'
 import { RefreshTokenGuard } from 'src/common/guards'
 import { TransformInterceptor } from 'src/common/interceptors'
 import { GetUserDto, LoginAuthDto, RegisterAuthDto } from '../dtos'
-import { AuthService } from '../services'
+import { AuthService } from '../services/auth.service'
 import { Tokens } from '../types'
 
 @ApiTags('Auth')

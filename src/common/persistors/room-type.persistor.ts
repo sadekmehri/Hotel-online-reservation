@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common'
-import { RoomTypeFactory } from 'src/common/factory'
 import { PrismaService } from 'src/prisma/prisma.service'
+import { RoomTypeFactory } from '../factory'
 import { RoomTypeModel } from '../models'
 import { FactoryTypes, IPersist } from '../types'
 import { randomNumber } from '../utils/random.util'

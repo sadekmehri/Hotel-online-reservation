@@ -11,5 +11,5 @@ export class GetUserDto {
   email: string
 
   @Transform(({ value }) => parseDateToString(value))
-  dob: Date
+  dob?: Date
 }

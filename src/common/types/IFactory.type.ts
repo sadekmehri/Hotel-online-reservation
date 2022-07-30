@@ -1,5 +1,5 @@
 export interface IFactory<T> {
-  generate(limit: number): Promise<T[]>
+  generate(limit: number): Promise<T[] | T>
   create(): Promise<T>
 }
 

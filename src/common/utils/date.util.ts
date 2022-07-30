@@ -1,5 +1,5 @@
 import moment from 'moment'
-import { DateFormat } from '../constants/date.enum'
+import { DateFormat } from '../constants/date-format.enum'
 
 /* Get current date */
 export const getCurrentDate = (

@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common'
 import { Request, Response } from 'express'
 import { getCurrentDate } from '../utils/date.util'
-import { DateFormat } from 'src/common/constants/date.enum'
+import { DateFormat } from 'src/common/constants/date-format.enum'
 
 @Catch(HttpException)
 export class HttpExceptionFilter implements ExceptionFilter {

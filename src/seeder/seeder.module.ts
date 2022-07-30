@@ -11,6 +11,7 @@ import { SeederService } from './seeder.service'
 
 const { IUserPersistor, IRoomTypePersistor, IRoomPersistor } = PersistorTypes
 const { IUserFactory, IRoomTypeFactory, IRoomFactory } = FactoryTypes
+
 @Module({
   imports: [PrismaModule],
   providers: [

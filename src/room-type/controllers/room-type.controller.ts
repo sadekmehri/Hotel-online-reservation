@@ -2,7 +2,7 @@ import { Controller, Get, HttpCode, HttpStatus } from '@nestjs/common'
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 import { Public } from 'src/common/decorators'
 import { GetRoomTypeDto } from '../dtos'
-import { RoomTypeService } from '../services'
+import { RoomTypeService } from '../services/room-type.service'
 
 @ApiTags('Room-types')
 @Controller('room-types')

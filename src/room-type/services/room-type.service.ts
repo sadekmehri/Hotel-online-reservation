@@ -11,7 +11,7 @@ export class RoomTypeService {
     const roomTypesRecords = await this.prismaService.roomtypes.findMany({
       select: {
         roomTypeId: true,
-        description: true,
+        name: true,
       },
       orderBy: {
         roomTypeId: 'desc',
@@ -37,7 +37,7 @@ export class RoomTypeService {
       },
       select: {
         roomTypeId: true,
-        description: true,
+        name: true,
       },
     })
 

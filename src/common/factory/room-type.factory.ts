@@ -21,7 +21,7 @@ export class RoomTypeFactory implements IFactory<RoomTypeModel> {
   /* Create single room-type record */
   async create(): Promise<RoomTypeModel> {
     return {
-      description: faker.lorem.word(4),
+      name: faker.lorem.word(4),
     }
   }
 }

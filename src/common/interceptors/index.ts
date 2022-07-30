@@ -1,1 +1,1 @@
-export { TransformInterceptor } from 'src/common/interceptors/dto.interceptor'
+export { TransformInterceptor } from './dto.interceptor'

@@ -1,10 +1,5 @@
-import { Injectable, OnModuleInit, Logger } from '@nestjs/common'
-import { PrismaClient, Prisma } from '@prisma/client'
-import { ExecException } from 'child_process'
-
-import util from 'util'
-
-const exec = util.promisify(require('child_process').exec)
+import { Injectable, Logger, OnModuleInit } from '@nestjs/common'
+import { Prisma, PrismaClient } from '@prisma/client'
 
 @Injectable()
 export class PrismaService
@@ -18,48 +13,30 @@ export class PrismaService
   }
 
   async onModuleInit() {
-    this.$on('query', (event) => {
+    this.$on('query', ({ query, params, duration }) => {
       this.logger.log(
-        `Query: ${event.query}`,
-        `Params: ${event.params}`,
-        `Duration: ${event.duration} ms`,
+        `Query: ${query}`,
+        `Params: ${params}`,
+        `Duration: ${duration} ms`,
       )
     })
 
-    this.$on('info', (event) => {
-      this.logger.log(`message: ${event.message}`)
+    this.$on('info', ({ message }) => {
+      this.logger.log(`message: ${message}`)
     })
 
-    this.$on('error', (event) => {
-      this.logger.log(`error: ${event.message}`)
+    this.$on('error', ({ message }) => {
+      this.logger.log(`error: ${message}`)
     })
 
-    this.$on('warn', (event) => {
-      this.logger.log(`warn: ${event.message}`)
+    this.$on('warn', ({ message }) => {
+      this.logger.log(`warn: ${message}`)
     })
 
     await this.$connect()
-    await this.truncate()
   }
 
   async onModuleDestroy() {
     await this.$disconnect()
-  }
-
-  /* Execute sql script to re-create tables */
-  async truncate() {
-    const {
-      error,
-      stdout,
-      stderr,
-    }: { error: ExecException; stdout: string; stderr: string } = await exec(
-      'npx prisma db execute --file ./prisma/hotel.sql --schema ./prisma/schema.prisma',
-    )
-
-    if (error) throw new Error(`error: ${error.message}`)
-
-    if (stderr) throw new Error(`stderr: ${stderr}`)
-
-    this.logger.log(`stdout: ${stdout}`)
   }
 }

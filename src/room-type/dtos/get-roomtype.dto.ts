@@ -4,5 +4,5 @@ export class GetRoomTypeDto {
   @Expose({ name: 'id' })
   readonly roomTypeId: number
 
-  description: string
+  name: string
 }

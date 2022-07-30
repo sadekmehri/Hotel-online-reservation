@@ -21,7 +21,7 @@ export class RoomFactory implements IFactory<RoomModel> {
     let room: RoomModel
 
     const roomTypes = await this.roomTypePersistor.select()
-    const length = roomTypes.length
+    const { length } = roomTypes
 
     if (length === 0) throw new Error('There are room-types records')
 

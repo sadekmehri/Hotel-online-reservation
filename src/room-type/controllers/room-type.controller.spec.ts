@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { RoomTypeController } from '.'
+import { RoomTypeController } from './room-type.controller'
 
 describe('RoomTypeController', () => {
   let controller: RoomTypeController

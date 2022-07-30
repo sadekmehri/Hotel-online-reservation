@@ -1,10 +1,6 @@
 import { Inject, Injectable, OnModuleInit } from '@nestjs/common'
 import { Seed } from 'src/common/constants'
-import {
-  RoomPersistor,
-  RoomTypePersistor,
-  UserPersistor,
-} from 'src/common/persistors'
+import { RoomModel, RoomTypeModel, UserModel } from 'src/common/models'
 import { IPersist, PersistorTypes } from 'src/common/types'
 
 const { IUserPersistor, IRoomTypePersistor, IRoomPersistor } = PersistorTypes
@@ -13,19 +9,19 @@ const { IUserPersistor, IRoomTypePersistor, IRoomPersistor } = PersistorTypes
 export class SeederService implements OnModuleInit {
   constructor(
     @Inject(IUserPersistor)
-    private readonly userPersistor: IPersist<UserPersistor>,
+    private readonly userPersistor: IPersist<UserModel>,
     @Inject(IRoomTypePersistor)
-    private readonly roomTypePersistor: IPersist<RoomTypePersistor>,
+    private readonly roomTypePersistor: IPersist<RoomTypeModel>,
     @Inject(IRoomPersistor)
-    private readonly roomPersistor: IPersist<RoomPersistor>,
+    private readonly roomPersistor: IPersist<RoomModel>,
   ) {}
 
   /* Insert records to database */
   async onModuleInit() {
-    Promise.all([
-      await this.userPersistor.insert(Seed.INSERT_USER_RECORDS),
-      await this.roomTypePersistor.insert(Seed.INSERT_ROOM_TYPE_RECORDS),
-      await this.roomPersistor.insert(Seed.INSERT_ROOM_RECORDS),
+    await Promise.all([
+      this.userPersistor.insert(Seed.USER_RECORDS),
+      this.roomTypePersistor.insert(Seed.ROOM_TYPE_RECORDS),
+      this.roomPersistor.insert(Seed.ROOM_RECORDS),
     ])
   }
 }

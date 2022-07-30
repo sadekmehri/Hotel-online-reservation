@@ -48,25 +48,6 @@ CREATE TABLE IF NOT EXISTS `addresses` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `admins`
---
-
-DROP TABLE IF EXISTS `admins`;
-CREATE TABLE IF NOT EXISTS `admins` (
-  `adminId` int(11) NOT NULL AUTO_INCREMENT,
-  `firstName` varchar(100) NOT NULL,
-  `lastName` varchar(100) NOT NULL,
-  `email` varchar(255) NOT NULL,
-  `password` varchar(255) NOT NULL,
-  `createDate` datetime NOT NULL DEFAULT current_timestamp(),
-  `lastUpdate` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
-  PRIMARY KEY (`adminId`),
-  UNIQUE KEY `uc_admin_email` (`email`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
--- --------------------------------------------------------
-
---
 -- Table structure for table `bills`
 --
 
@@ -78,7 +59,8 @@ CREATE TABLE IF NOT EXISTS `bills` (
   `createDate` datetime NOT NULL DEFAULT current_timestamp(),
   `lastUpdate` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   PRIMARY KEY (`billId`),
-  KEY `fk_bill_reservation` (`reservationId`)
+  KEY `fk_bill_reservation` (`reservationId`),
+  CONSTRAINT CHK_Bill_total CHECK (total >= 0)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
@@ -127,7 +109,8 @@ CREATE TABLE IF NOT EXISTS `payments` (
   `lastUpdate` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   PRIMARY KEY (`paymentId`),
   KEY `fk_payment_bill` (`billId`),
-  KEY `fk_payment_payment_type` (`paymentTypeId`)
+  KEY `fk_payment_payment_type` (`paymentTypeId`),
+  CONSTRAINT CHK_Payment_status CHECK (`status` in (0, 1, 2))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
@@ -159,7 +142,8 @@ CREATE TABLE IF NOT EXISTS `reservations` (
   `createDate` datetime NOT NULL DEFAULT current_timestamp(),
   `lastUpdate` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   PRIMARY KEY (`reservationId`),
-  KEY `fk_reservation_user` (`userId`)
+  KEY `fk_reservation_user` (`userId`),
+  CONSTRAINT CHK_Reservation_dates CHECK (`dateOut` >=  `dateIn`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
@@ -177,7 +161,9 @@ CREATE TABLE IF NOT EXISTS `reservedrooms` (
   `status` tinyint(1) NOT NULL DEFAULT 0,
   PRIMARY KEY (`reservedRoomId`,`reservationId`,`roomId`),
   KEY `fk_reservedroom_room` (`roomId`),
-  KEY `fk_reservedroom_reservation` (`reservationId`)
+  KEY `fk_reservedroom_reservation` (`reservationId`),
+  CONSTRAINT CHK_ReservedRoom_price CHECK (`price` >=  0),
+  CONSTRAINT CHK_ReservedRoom_status CHECK (`status` in (0 ,1 ,2))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
@@ -197,7 +183,8 @@ CREATE TABLE IF NOT EXISTS `roomratings` (
   `lastUpdate` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   PRIMARY KEY (`roomRatingId`),
   KEY `fk_roomrating_user` (`userId`),
-  KEY `fk_roomrating_room` (`roomId`)
+  KEY `fk_roomrating_room` (`roomId`),
+  CONSTRAINT CHK_RoomRating_rating CHECK (`rating` >= 0 and `rating` <= 5)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
@@ -218,7 +205,10 @@ CREATE TABLE IF NOT EXISTS `rooms` (
   `lastUpdate` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   PRIMARY KEY (`roomId`),
   UNIQUE KEY `uc_room_code` (`code`),
-  KEY `fk_room_room_type` (`roomTypeId`)
+  KEY `fk_room_room_type` (`roomTypeId`),
+  CONSTRAINT CHK_Room_status CHECK (`status` in (0,1)),
+  CONSTRAINT CHK_Room_reserved CHECK (`reserved` in (0,1)),
+  CONSTRAINT CHK_Room_price CHECK (`price` >= 0)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
@@ -230,8 +220,9 @@ CREATE TABLE IF NOT EXISTS `rooms` (
 DROP TABLE IF EXISTS `roomtypes`;
 CREATE TABLE IF NOT EXISTS `roomtypes` (
   `roomTypeId` int(11) NOT NULL AUTO_INCREMENT,
-  `description` varchar(200) NOT NULL,
-  PRIMARY KEY (`roomTypeId`)
+  `name` varchar(200) NOT NULL,
+  PRIMARY KEY (`roomTypeId`),
+  UNIQUE KEY `uc_room_type_name` (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
@@ -246,19 +237,23 @@ CREATE TABLE IF NOT EXISTS `users` (
   `firstName` varchar(100) NOT NULL,
   `lastName` varchar(100) NOT NULL,
   `email` varchar(255) NOT NULL,
-  `cin` varchar(100) NOT NULL,
-  `dob` date NOT NULL,
+  `cin` varchar(100) NULL,
+  `dob` date NULL,
   `password` varchar(255) NOT NULL,
   `refreshToken` tinytext DEFAULT NULL,
   `isEmailConfirmed` tinyint(1) NOT NULL DEFAULT 0,
-  `isActive` tinyint(1) NOT NULL DEFAULT 0,
+  `isActive` tinyint(1) NOT NULL DEFAULT 1,
+  `isAdmin` tinyint(1) NOT NULL DEFAULT 0,
   `addressId` smallint(5) UNSIGNED DEFAULT NULL,
   `createDate` datetime NOT NULL DEFAULT current_timestamp(),
   `lastUpdate` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   PRIMARY KEY (`userId`),
   UNIQUE KEY `uc_user_email` (`email`),
   UNIQUE KEY `uc_user_cin` (`cin`),
-  KEY `fk_user_address` (`addressId`)
+  KEY `fk_user_address` (`addressId`),
+  CONSTRAINT CHK_User_active CHECK (`isActive` in (0,1)),
+  CONSTRAINT CHK_User_admin CHECK (`isAdmin` in (0,1)),
+  CONSTRAINT CHK_User_email_confirmed CHECK (`isEmailConfirmed` in (0,1))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
@@ -269,7 +264,7 @@ CREATE TABLE IF NOT EXISTS `users` (
 -- Constraints for table `addresses`
 --
 ALTER TABLE `addresses`
-  ADD CONSTRAINT `fk_address_city` FOREIGN KEY (`cityId`) REFERENCES `city` (`cityId`) ON UPDATE CASCADE;
+  ADD CONSTRAINT `fk_address_city` FOREIGN KEY (`cityId`) REFERENCES `cities` (`cityId`) ON UPDATE CASCADE;
 
 --
 -- Constraints for table `bills`
@@ -281,7 +276,7 @@ ALTER TABLE `bills`
 -- Constraints for table `cities`
 --
 ALTER TABLE `cities`
-  ADD CONSTRAINT `fk_city_country` FOREIGN KEY (`countryId`) REFERENCES `country` (`countryId`) ON UPDATE CASCADE;
+  ADD CONSTRAINT `fk_city_country` FOREIGN KEY (`countryId`) REFERENCES `countries` (`countryId`) ON UPDATE CASCADE;
 
 --
 -- Constraints for table `payments`

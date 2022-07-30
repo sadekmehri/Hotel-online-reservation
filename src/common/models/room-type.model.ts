@@ -1,6 +1,6 @@
 export interface RoomTypeModel {
   readonly roomTypeId?: number
-  description: string
+  name: string
 }
 
 export const RoomTypeModel = Symbol('RoomTypeModel')

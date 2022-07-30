@@ -13,7 +13,7 @@ import { Public } from 'src/common/decorators'
 import { TransformInterceptor } from 'src/common/interceptors/dto.interceptor'
 import { IPaginateResponse, PaginateRequest } from 'src/common/types'
 import { CreateRoomDto, GetRoomDto } from '../dtos'
-import { RoomService } from '../services'
+import { RoomService } from '../services/room.service'
 
 @ApiTags('Rooms')
 @Controller('rooms')

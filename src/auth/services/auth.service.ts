@@ -1,6 +1,7 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
 import { Jwt } from 'src/common/constants'
+import { UserModel } from 'src/common/models'
 import { compareHashToText, hash } from 'src/common/utils/bcrypt.util'
 import { parseStringToDate } from 'src/common/utils/date.util'
 import { PrismaService } from 'src/prisma/prisma.service'
@@ -85,6 +86,7 @@ export class AuthService {
         userId: true,
         email: true,
         password: true,
+        isActive: true,
       },
     })
 
@@ -94,7 +96,19 @@ export class AuthService {
         HttpStatus.BAD_REQUEST,
       )
 
-    const { userId, email: userEmail, password: hashedPassword } = user[0]
+    const {
+      userId,
+      email: userEmail,
+      password: hashedPassword,
+      isActive,
+    } = user[0]
+
+    // Check if the user account is not blocked
+    if (!isActive)
+      throw new HttpException(
+        { message: `Account blocked. please contact the admin!` },
+        HttpStatus.OK,
+      )
 
     // Check if the stored password matches with the given password
     const isPasswordMatching: boolean = await compareHashToText(
@@ -232,14 +246,62 @@ export class AuthService {
   }
 
   /* Update refresh token field after user registration */
-  private async updateRefreshToken(userId: number, refreshToken: string) {
+  private async updateRefreshToken(
+    userId: number,
+    refreshToken: string,
+  ): Promise<void> {
     const hashedToken: string = await hash(refreshToken)
+
     await this.prismaService.users.update({
       where: {
         userId,
       },
       data: {
         refreshToken: hashedToken,
+      },
+    })
+  }
+
+  /* Get auth information by email */
+  async getAuthByEmail(email: string): Promise<UserModel> {
+    const user = await this.prismaService.users.findUnique({
+      where: { email },
+    })
+
+    // Check if user exists
+    if (!user)
+      throw new HttpException(
+        { message: `User does not exist!` },
+        HttpStatus.NOT_FOUND,
+      )
+
+    return user
+  }
+
+  /* Get auth details by giving id as param */
+  async getAuthById(id: number): Promise<UserModel> {
+    const user = await this.prismaService.users.findUnique({
+      where: { userId: id },
+    })
+
+    // Check if user exists
+    if (!user)
+      throw new HttpException(
+        { message: `User does not exist!` },
+        HttpStatus.NOT_FOUND,
+      )
+
+    return user
+  }
+
+  /* Mark auth email as confirmed */
+  async markEmailAsConfirmed(email: string): Promise<UserModel> {
+    return this.prismaService.users.update({
+      where: {
+        email,
+      },
+      data: {
+        isEmailConfirmed: true,
       },
     })
   }
