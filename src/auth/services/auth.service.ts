@@ -87,8 +87,6 @@ export class AuthService {
         email: true,
         password: true,
         isActive: true,
-        isAdmin: true,
-        isEmailConfirmed: true,
       },
     })
 
@@ -98,7 +96,7 @@ export class AuthService {
         HttpStatus.BAD_REQUEST,
       )
 
-    const { userId, password: hashedPassword } = user[0]
+    const { userId, isActive, password: hashedPassword } = user[0]
 
     // Check if the stored password matches with the given password
     const isPasswordMatching = await compareHashToText(password, hashedPassword)
@@ -107,6 +105,13 @@ export class AuthService {
       throw new HttpException(
         { message: `Email or password is incorrect!` },
         HttpStatus.BAD_REQUEST,
+      )
+
+    // Check if the account is blocked
+    if (!isActive)
+      throw new HttpException(
+        { message: `Your account is blocked!` },
+        HttpStatus.FORBIDDEN,
       )
 
     // Eliminate password field
@@ -133,9 +138,6 @@ export class AuthService {
         userId: true,
         email: true,
         refreshToken: true,
-        isActive: true,
-        isEmailConfirmed: true,
-        isAdmin: true,
       },
     })
 

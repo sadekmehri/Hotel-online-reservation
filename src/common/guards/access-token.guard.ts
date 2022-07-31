@@ -10,7 +10,6 @@ export class AccessTokenGuard extends AuthGuard(Jwt.ACCESS_TOKEN_STRATEGY) {
     super()
   }
 
-  /* Check if the @ispublic() decorator is found in class level or method level to by pass protected routes */
   canActivate(
     context: ExecutionContext,
   ): boolean | Promise<boolean> | Observable<boolean> {

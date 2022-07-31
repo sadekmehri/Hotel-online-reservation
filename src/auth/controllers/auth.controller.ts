@@ -14,7 +14,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger'
 import { GetCurrentAuth, GetCurrentAuthId, Public } from 'src/common/decorators'
-import { RefreshTokenGuard } from 'src/common/guards'
+import { ActiveAccountGuard, RefreshTokenGuard } from 'src/common/guards'
 import { TransformInterceptor } from 'src/common/interceptors'
 import { GetUserDto, LoginAuthDto, RegisterAuthDto } from '../dtos'
 import { AuthService } from '../services/auth.service'
@@ -118,6 +118,7 @@ export class AuthController {
 
   @Post('/me')
   @HttpCode(HttpStatus.OK)
+  @UseGuards(ActiveAccountGuard)
   @UseInterceptors(new TransformInterceptor(GetUserDto))
   @ApiOperation({ summary: 'Get auth details feature' })
   @ApiBearerAuth()
@@ -144,6 +145,7 @@ export class AuthController {
 
   @Post('/logout')
   @HttpCode(HttpStatus.OK)
+  @UseGuards(ActiveAccountGuard)
   @ApiOperation({ summary: 'Logout feature' })
   @ApiBearerAuth()
   @ApiResponse({

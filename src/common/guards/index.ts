@@ -1,4 +1,5 @@
 export { AccessTokenGuard } from './access-token.guard'
-export { EmailConfirmationGuard } from './email-confirmation.guard'
+export { ConfirmedEmailGuard } from './confirmed-email.guard'
 export { RefreshTokenGuard } from './refresh-token.guard'
 export { RoleGuard } from './role.guard'
+export { ActiveAccountGuard } from './active-account.guard'
