@@ -52,7 +52,7 @@ export class AuthService {
       )
 
     // Hash the password
-    const hashedPassword: string = await hash(password)
+    const hashedPassword = await hash(password)
 
     // Save user to database
     const newUser = await this.prismaService.users.create({
@@ -87,6 +87,8 @@ export class AuthService {
         email: true,
         password: true,
         isActive: true,
+        isAdmin: true,
+        isEmailConfirmed: true,
       },
     })
 
@@ -96,25 +98,10 @@ export class AuthService {
         HttpStatus.BAD_REQUEST,
       )
 
-    const {
-      userId,
-      email: userEmail,
-      password: hashedPassword,
-      isActive,
-    } = user[0]
-
-    // Check if the user account is not blocked
-    if (!isActive)
-      throw new HttpException(
-        { message: `Account blocked. please contact the admin!` },
-        HttpStatus.OK,
-      )
+    const { userId, password: hashedPassword } = user[0]
 
     // Check if the stored password matches with the given password
-    const isPasswordMatching: boolean = await compareHashToText(
-      password,
-      hashedPassword,
-    )
+    const isPasswordMatching = await compareHashToText(password, hashedPassword)
 
     if (!isPasswordMatching)
       throw new HttpException(
@@ -122,8 +109,12 @@ export class AuthService {
         HttpStatus.BAD_REQUEST,
       )
 
+    // Eliminate password field
+    const { password: string, ...otherFields } = { ...user[0] }
+    const userPayload: JwtPayload = otherFields
+
     // Get generated tokens
-    const tokens = await this.generateTokens(userId, userEmail)
+    const tokens = await this.generateTokens(userPayload)
 
     // Save refresh token to database
     await this.updateRefreshToken(userId, tokens.refreshToken)
@@ -142,6 +133,9 @@ export class AuthService {
         userId: true,
         email: true,
         refreshToken: true,
+        isActive: true,
+        isEmailConfirmed: true,
+        isAdmin: true,
       },
     })
 
@@ -153,7 +147,7 @@ export class AuthService {
       )
 
     // Check if the stored refreshToken matches with the given refreshToken
-    const isRefreshTokenMatching: boolean = await compareHashToText(
+    const isRefreshTokenMatching = await compareHashToText(
       refreshToken,
       user.refreshToken,
     )
@@ -164,13 +158,15 @@ export class AuthService {
         HttpStatus.FORBIDDEN,
       )
 
-    const { userId: id, email } = user
+    // Eliminate refresh token field from user
+    const { refreshToken: string, ...otherFields } = { ...user }
+    const userPayload: JwtPayload = otherFields
 
-    // Get generated tokens
-    const tokens = await this.generateTokens(id, email)
+    //Get generated token
+    const tokens = await this.generateTokens(userPayload)
 
     // Save refresh token to database
-    await this.updateRefreshToken(id, tokens.refreshToken)
+    await this.updateRefreshToken(userId, tokens.refreshToken)
 
     return tokens
   }
@@ -207,7 +203,7 @@ export class AuthService {
   }
 
   /* Generate access token and refresh token */
-  private async generateTokens(userId: number, email: string): Promise<Tokens> {
+  private async generateTokens(userPayload: JwtPayload): Promise<Tokens> {
     // Access token options
     const accessTokenOptions: JwtOptions = {
       secret: Jwt.ACCESS_TOKEN_SECRET,
@@ -221,8 +217,8 @@ export class AuthService {
     }
 
     const [accessToken, refreshToken] = await Promise.all([
-      this.signToken(userId, email, accessTokenOptions),
-      this.signToken(userId, email, refreshTokenOptions),
+      this.jwtService.signAsync(userPayload, accessTokenOptions),
+      this.jwtService.signAsync(userPayload, refreshTokenOptions),
     ])
 
     return {
@@ -231,26 +227,12 @@ export class AuthService {
     }
   }
 
-  /* Sign for token */
-  private signToken(
-    userId: number,
-    email: string,
-    options: JwtOptions,
-  ): Promise<string> {
-    const jwtPayload: JwtPayload = {
-      userId: userId,
-      email: email,
-    }
-
-    return this.jwtService.signAsync(jwtPayload, options)
-  }
-
   /* Update refresh token field after user registration */
   private async updateRefreshToken(
     userId: number,
     refreshToken: string,
   ): Promise<void> {
-    const hashedToken: string = await hash(refreshToken)
+    const hashedToken = await hash(refreshToken)
 
     await this.prismaService.users.update({
       where: {

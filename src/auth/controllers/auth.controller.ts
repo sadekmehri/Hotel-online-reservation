@@ -56,8 +56,8 @@ export class AuthController {
   // @access    Public
 
   @Public()
-  @Post('/login')
   @HttpCode(HttpStatus.OK)
+  @Post('/login')
   @ApiOperation({ summary: 'Login feature' })
   @ApiResponse({
     status: HttpStatus.OK,
@@ -66,6 +66,10 @@ export class AuthController {
   @ApiResponse({
     status: HttpStatus.BAD_REQUEST,
     description: 'Form validation errors',
+  })
+  @ApiResponse({
+    status: HttpStatus.FORBIDDEN,
+    description: 'Account blocked',
   })
   @ApiResponse({
     status: HttpStatus.TOO_MANY_REQUESTS,
@@ -79,10 +83,10 @@ export class AuthController {
   // @route     POST /auth/refresh
   // @access    Private
 
-  @Public()
-  @UseGuards(RefreshTokenGuard)
   @Post('/refresh')
   @HttpCode(HttpStatus.OK)
+  @Public()
+  @UseGuards(RefreshTokenGuard)
   @ApiOperation({ summary: 'Refresh access token feature' })
   @ApiBearerAuth()
   @ApiResponse({

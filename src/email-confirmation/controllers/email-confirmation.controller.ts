@@ -14,8 +14,8 @@ import {
   ApiTags,
 } from '@nestjs/swagger'
 import { Throttle } from '@nestjs/throttler'
-import { DateMeasure, RateLimit } from 'src/common/constants'
-import { GetCurrentAuthId, Public } from 'src/common/decorators'
+import { DateMeasure, RateLimit, Role } from 'src/common/constants'
+import { GetCurrentAuthId, Public, Roles } from 'src/common/decorators'
 import { SendEmailDto } from '../dtos'
 import { EmailConfirmationService } from '../services/email-confirmation.service'
 
@@ -62,10 +62,10 @@ export class EmailConfirmationController {
 
   @Public()
   @Get('confirm')
-  @HttpCode(HttpStatus.OK)
+  @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'Confirm verification link feature' })
   @ApiResponse({
-    status: HttpStatus.OK,
+    status: HttpStatus.NO_CONTENT,
     description: 'Account is successfully verified',
   })
   @ApiResponse({
@@ -90,15 +90,29 @@ export class EmailConfirmationController {
   // @desc      Resend confirmation link
   // @route     POST /account/resend-confirmation-link
   // @access    Private
+  // @role      User
 
   @Post('resend-confirmation-link')
+  @Roles(Role.USER)
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Resend verification link feature' })
   @ApiBearerAuth()
   @ApiResponse({
     status: HttpStatus.TOO_MANY_REQUESTS,
     description: 'You have reached the maximum request limit rate',
   })
-  @ApiOperation({ summary: 'Resend verification link feature' })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: 'Form validation errors',
+  })
+  @ApiResponse({
+    status: HttpStatus.UNAUTHORIZED,
+    description: 'Unauthorized action',
+  })
+  @ApiResponse({
+    status: HttpStatus.FORBIDDEN,
+    description: "User role doesn't match the requirements",
+  })
   async resend(@GetCurrentAuthId() userId: number): Promise<void> {
     await this.emailConfirmationService.resendConfirmationLink(userId)
   }

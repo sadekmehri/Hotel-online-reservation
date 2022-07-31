@@ -12,7 +12,7 @@ import {
   NotFoundExceptionFilter,
   ThrottlerExceptionFilter,
 } from './common/filters'
-import { AccessTokenGuard, RolesGuard } from './common/guards'
+import { AccessTokenGuard, RoleGuard } from './common/guards'
 import { EmailConfirmationModule } from './email-confirmation/email-confirmation.module'
 import { EmailModule } from './email/email.module'
 import { PrismaModule } from './prisma/prisma.module'
@@ -38,7 +38,7 @@ const envFilePath: string = getEnvPath(Path.ROOT_PATH)
     { provide: APP_FILTER, useClass: NotFoundExceptionFilter },
     { provide: APP_FILTER, useClass: ThrottlerExceptionFilter },
     { provide: APP_GUARD, useClass: AccessTokenGuard },
-    { provide: APP_GUARD, useClass: RolesGuard },
+    { provide: APP_GUARD, useClass: RoleGuard },
     { provide: APP_GUARD, useClass: ThrottlerGuard },
   ],
 })

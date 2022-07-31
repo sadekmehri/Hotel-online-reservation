@@ -8,8 +8,14 @@ import {
   Query,
   UseInterceptors,
 } from '@nestjs/common'
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
-import { Public } from 'src/common/decorators'
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger'
+import { Role } from 'src/common/constants'
+import { Public, Roles } from 'src/common/decorators'
 import { TransformInterceptor } from 'src/common/interceptors/dto.interceptor'
 import { IPaginateResponse, PaginateRequest } from 'src/common/types'
 import { CreateRoomDto, GetRoomDto } from '../dtos'
@@ -44,11 +50,13 @@ export class RoomController {
 
   // @desc      Create new room
   // @route     Post /rooms/
-  // @access    Public
+  // @access    Private
+  // @role      Admin
 
-  @Public()
   @Post('/')
+  @Roles(Role.ADMIN)
   @HttpCode(HttpStatus.CREATED)
+  @ApiBearerAuth()
   @UseInterceptors(new TransformInterceptor(GetRoomDto))
   @ApiOperation({ summary: 'Create room feature' })
   @ApiResponse({
@@ -58,6 +66,14 @@ export class RoomController {
   @ApiResponse({
     status: HttpStatus.BAD_REQUEST,
     description: 'Form validation errors',
+  })
+  @ApiResponse({
+    status: HttpStatus.UNAUTHORIZED,
+    description: 'Unauthorized action',
+  })
+  @ApiResponse({
+    status: HttpStatus.FORBIDDEN,
+    description: "User role doesn't match the requirements",
   })
   createRoom(@Body() createRoomDto: CreateRoomDto): Promise<GetRoomDto> {
     return this.roomService.createRoom(createRoomDto)
