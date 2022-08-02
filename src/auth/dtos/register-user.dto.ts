@@ -81,6 +81,7 @@ export class RegisterAuthDto {
     example: '1998-10-10',
   })
   @IsNotEmpty()
+  @IsString()
   @Validate(DateFormatValidator, [DateFormat.DATE])
   @Validate(DateRangeValidator, [
     sustractDateByYear(120),

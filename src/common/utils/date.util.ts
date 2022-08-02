@@ -16,14 +16,6 @@ export const isValidDateFormat = (
   return moment(date, dateFormat, true).isValid()
 }
 
-/* Convert a given string to date */
-export const parseStringToDate = (
-  date: string,
-  dateFormat: string = DateFormat.DATE,
-): Date => {
-  return moment(date, dateFormat).toDate()
-}
-
 /* Convert date to string */
 export const parseDateToString = (
   date: Date,

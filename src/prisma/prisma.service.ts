@@ -1,15 +1,21 @@
-import { Injectable, Logger, OnModuleInit } from '@nestjs/common'
+import {
+  Injectable,
+  Logger,
+  OnModuleDestroy,
+  OnModuleInit,
+} from '@nestjs/common'
 import { Prisma, PrismaClient } from '@prisma/client'
 
 @Injectable()
 export class PrismaService
   extends PrismaClient<Prisma.PrismaClientOptions, Prisma.LogLevel>
-  implements OnModuleInit
+  implements OnModuleInit, OnModuleDestroy
 {
-  private readonly logger: Logger = new Logger(PrismaService.name)
+  private readonly logger = new Logger(PrismaService.name)
 
   constructor() {
-    super({ log: ['query', 'info', 'warn', 'error'] })
+    // query, info
+    super({ log: ['warn', 'error'] })
   }
 
   async onModuleInit() {
@@ -34,6 +40,14 @@ export class PrismaService
     })
 
     await this.$connect()
+  }
+
+  async truncate() {
+    const models = Reflect.ownKeys(this).filter((key) => key[0] !== '_')
+    const prismaModels = models.filter((modelKey) => modelKey !== 'logger')
+    return Promise.all(
+      prismaModels.map((modelKey) => this[modelKey].deleteMany()),
+    )
   }
 
   async onModuleDestroy() {

@@ -26,7 +26,7 @@ export class RefreshTokenStrategy extends PassportStrategy(
 
     if (!refreshToken)
       throw new HttpException(
-        { message: `Refresh token malformed'!` },
+        { message: `Refresh token malformed!` },
         HttpStatus.FORBIDDEN,
       )
 

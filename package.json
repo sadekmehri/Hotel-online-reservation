@@ -8,7 +8,7 @@
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "nest build",
-    "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
+    "format": "prettier --write \"src/**/*.ts\"",
     "prisma:db-truncate": "dotenv -e .env.development -- npx prisma db execute --file ./prisma/hotel.sql --schema ./prisma/schema.prisma",
     "prisma:db-seed": "npm run prisma:db-truncate && dotenv -e .env.development -- ts-node src/common/seed/main.ts",
     "prisma:generate": "dotenv -e .env.development -- npx prisma generate",
@@ -24,9 +24,11 @@
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "test": "dotenv -e .env.test -- jest",
     "test:watch": "dotenv -e .env.test -- jest --watch",
-    "test:cov": "jest --coverage",
+    "test:cov": "dotenv -e .env.test -- jest --coverage --config jest-int.config.json",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "pretest:int": "dotenv -e .env.test -- npx prisma db execute --file ./prisma/hotel-test.sql --schema ./prisma/schema.prisma",
+    "test:int": "dotenv -e .env.test -- jest -i --no-cache --watch --config jest-int.config.json"
   },
   "dependencies": {
     "@faker-js/faker": "^7.3.0",
@@ -91,6 +93,11 @@
       "json",
       "ts"
     ],
+    "moduleNameMapper": {
+      "^src/(.*)$": "<rootDir>/$1"
+    },
+    "collectCoverage": true,
+    "coverageReporters": ["json", "html"],
     "rootDir": "src",
     "testRegex": ".*\\.spec\\.ts$",
     "transform": {
@@ -99,7 +106,7 @@
     "collectCoverageFrom": [
       "**/*.(t|j)s"
     ],
-    "coverageDirectory": "../coverage",
+    "coverageDirectory": "./coverage",
     "testEnvironment": "node"
   }
 }

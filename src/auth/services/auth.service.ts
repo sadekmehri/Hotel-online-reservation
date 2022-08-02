@@ -3,7 +3,6 @@ import { JwtService } from '@nestjs/jwt'
 import { Jwt } from 'src/common/constants'
 import { UserModel } from 'src/common/models'
 import { compareHashToText, hash } from 'src/common/utils/bcrypt.util'
-import { parseStringToDate } from 'src/common/utils/date.util'
 import { PrismaService } from 'src/prisma/prisma.service'
 import { GetUserDto, LoginAuthDto, RegisterAuthDto } from '../dtos'
 import { JwtOptions, JwtPayload, Tokens } from '../types'
@@ -59,7 +58,7 @@ export class AuthService {
       data: {
         ...registerAuthDto,
         password: hashedPassword,
-        dob: parseStringToDate(dob),
+        dob: new Date(dob),
       },
       select: {
         userId: true,
@@ -114,8 +113,12 @@ export class AuthService {
         HttpStatus.FORBIDDEN,
       )
 
-    // Eliminate password field
-    const { password: string, ...otherFields } = { ...user[0] }
+    // Eliminate password, isActive field
+    const {
+      password: string,
+      isActive: boolean,
+      ...otherFields
+    } = { ...user[0] }
     const userPayload: JwtPayload = otherFields
 
     // Get generated tokens
@@ -164,7 +167,7 @@ export class AuthService {
     const { refreshToken: string, ...otherFields } = { ...user }
     const userPayload: JwtPayload = otherFields
 
-    //Get generated token
+    // Get generated token
     const tokens = await this.generateTokens(userPayload)
 
     // Save refresh token to database
@@ -185,6 +188,8 @@ export class AuthService {
         lastName: true,
         email: true,
         dob: true,
+        isActive: true,
+        isEmailConfirmed: true,
       },
     })
   }
@@ -280,7 +285,7 @@ export class AuthService {
 
   /* Mark auth email as confirmed */
   async markEmailAsConfirmed(email: string): Promise<UserModel> {
-    return this.prismaService.users.update({
+    return await this.prismaService.users.update({
       where: {
         email,
       },

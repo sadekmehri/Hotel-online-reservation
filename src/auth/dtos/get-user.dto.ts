@@ -12,4 +12,8 @@ export class GetUserDto {
 
   @Transform(({ value }) => parseDateToString(value))
   dob?: Date
+
+  isActive?: boolean
+
+  isEmailConfirmed?: boolean
 }

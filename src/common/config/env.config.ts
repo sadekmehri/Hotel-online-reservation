@@ -3,10 +3,10 @@ import { resolve } from 'path'
 import { Environment } from '../constants'
 
 export function getEnvPath(dest: string): string {
-  const env: string = getEnv()
-  const fallback: string = resolve(`${dest}/.env.development`)
-  const filename: string = getEnvFileName(env)
-  let filePath: string = resolve(`${dest}/${filename}`)
+  const env = getEnv()
+  const fallback = resolve(`${dest}/.env.development`)
+  const filename = getEnvFileName(env)
+  let filePath = resolve(`${dest}/${filename}`)
 
   if (!existsSync(filePath)) {
     filePath = fallback
@@ -34,16 +34,16 @@ export function getEnv(): string {
 }
 
 export function isProdution(): boolean {
-  const env: string = getEnv()
+  const env = getEnv()
   return env === Environment.PRODUCTION
 }
 
 export function isDevelopment(): boolean {
-  const env: string = getEnv()
+  const env = getEnv()
   return env === Environment.DEVELOPMENT
 }
 
 export function isTesting(): boolean {
-  const env: string = getEnv()
+  const env = getEnv()
   return env === Environment.TEST
 }

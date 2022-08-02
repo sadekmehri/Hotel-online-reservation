@@ -41,3 +41,5 @@ lerna-debug.log*
 
 # Env files
 prisma/generated
+
+# Jest Coverage
