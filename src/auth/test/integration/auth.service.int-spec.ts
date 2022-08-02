@@ -10,6 +10,7 @@ import { AuthModule } from 'src/auth/auth.module'
 import { AuthService } from 'src/auth/services/auth.service'
 import { Tokens } from 'src/auth/types'
 import { AccessTokenGuard } from 'src/common/guards'
+import { sleep } from 'src/common/utils/sleep.util'
 import { PrismaService } from 'src/prisma/prisma.service'
 import request from 'supertest'
 import { loginUserStub, registerUserStub } from '../stubs/user.stub'
@@ -367,16 +368,15 @@ describe('AuthService', () => {
   describe('Get user details by email', () => {
     it("-> Should reject when the email doesn't exist", async () => {
       await authService.register(registerUser)
-      const getAuthByEmail = async () => {
-        await authService.getAuthByEmail('some-random@gmail.com')
-      }
+      const getAuthByEmail = async () => await authService.getAuthByEmail('some-random@gmail.com')
+      await sleep(1000)
       await expect(getAuthByEmail).rejects.toThrowError(HttpException)
     })
 
     it('-> Should pass and return the given user informations', async () => {
       await authService.register(registerUser)
-      const myTest = async () =>
-        await authService.getAuthByEmail(registerUser.email)
+      const myTest = async () => await authService.getAuthByEmail(registerUser.email)
+      await sleep(1000)
       expect(myTest).not.toThrow()
     })
   })
@@ -384,15 +384,15 @@ describe('AuthService', () => {
   // Get user details by id tests
   describe('Get user details by id', () => {
     it("-> Should reject when the user doesn't exist", async () => {
-      const getAuthById = async () => {
-        await authService.getAuthById(0)
-      }
+      const getAuthById = async () => await authService.getAuthById(0)
+      await sleep(1000)
       await expect(getAuthById).rejects.toThrowError(HttpException)
     })
 
     it('-> Should pass and return the given user informations', async () => {
       const newUser = await authService.register(registerUser)
       const myTest = async () => await authService.getAuthById(newUser.userId)
+      await sleep(1000)
       expect(myTest).not.toThrow()
     })
   })

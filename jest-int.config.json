@@ -1,6 +1,7 @@
 {
   "moduleFileExtensions": ["js", "json", "ts"],
   "rootDir": "src",
+  "verbose": true,
   "testEnvironment": "node",
   "testRegex": ".*\\.int-spec.ts$",
   "transform": {

@@ -1,7 +1,7 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common'
 import { Paginator } from 'src/common/constants'
 import { IPaginateResponse, PaginateRequest } from 'src/common/types'
-import { paginate } from 'src/common/utils/paginate.utils'
+import { paginate } from 'src/common/utils/paginate.util'
 import { PrismaService } from 'src/prisma/prisma.service'
 import { RoomTypeService } from 'src/room-type/services/room-type.service'
 import { CreateRoomDto, GetRoomDto } from '../dtos'

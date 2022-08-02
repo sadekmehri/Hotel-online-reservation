@@ -1,5 +1,5 @@
 import { ValidationError } from '@nestjs/common'
-import { formatValidationFormResponse } from '../utils/validation-form-format.utils'
+import { formatValidationFormResponse } from '../utils/validation-form-format.util'
 
 export const validationPipeOptions = {
   transform: true,
