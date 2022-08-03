@@ -5,23 +5,18 @@ import {
   HttpStatus,
   Injectable,
 } from '@nestjs/common'
+import { AuthService } from 'src/auth/services/auth.service'
 import { JwtPayload } from 'src/auth/types'
-import { PrismaService } from 'src/prisma/prisma.service'
 
 @Injectable()
 export class ActiveAccountGuard implements CanActivate {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(private readonly authService: AuthService) {}
 
   async canActivate(context: ExecutionContext) {
     const request = context.switchToHttp().getRequest()
-    const { email } = <JwtPayload>request.user
+    const { userId } = <JwtPayload>request.user
 
-    const { isActive } = await this.prismaService.users.findUnique({
-      where: { email },
-      select: {
-        isActive: true,
-      },
-    })
+    const { isActive } = await this.authService.getAuthInfo(userId)
 
     if (!isActive)
       throw new HttpException(

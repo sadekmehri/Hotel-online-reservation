@@ -24,7 +24,7 @@
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "test": "dotenv -e .env.test -- jest",
     "test:watch": "dotenv -e .env.test -- jest --watch",
-    "test:cov": "dotenv -e .env.test -- jest --coverage --config jest-int.config.json",
+    "test:cov": "dotenv -e .env.test -- jest -i --no-cache --coverage --config jest-int.config.json",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "pretest:int": "dotenv -e .env.test -- npx prisma db execute --file ./prisma/hotel-test.sql --schema ./prisma/schema.prisma",
@@ -97,7 +97,10 @@
       "^src/(.*)$": "<rootDir>/$1"
     },
     "collectCoverage": true,
-    "coverageReporters": ["json", "html"],
+    "coverageReporters": [
+      "json",
+      "html"
+    ],
     "rootDir": "src",
     "testRegex": ".*\\.spec\\.ts$",
     "transform": {

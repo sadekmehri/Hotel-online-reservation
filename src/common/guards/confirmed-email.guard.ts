@@ -5,23 +5,18 @@ import {
   HttpStatus,
   Injectable,
 } from '@nestjs/common'
+import { AuthService } from 'src/auth/services/auth.service'
 import { JwtPayload } from 'src/auth/types'
-import { PrismaService } from 'src/prisma/prisma.service'
 
 @Injectable()
 export class ConfirmedEmailGuard implements CanActivate {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(private readonly authService: AuthService) {}
 
   async canActivate(context: ExecutionContext) {
     const request = context.switchToHttp().getRequest()
-    const { email } = <JwtPayload>request.user
+    const { userId } = <JwtPayload>request.user
 
-    const { isEmailConfirmed } = await this.prismaService.users.findUnique({
-      where: { email },
-      select: {
-        isEmailConfirmed: true,
-      },
-    })
+    const { isEmailConfirmed } = await this.authService.getAuthInfo(userId)
 
     if (!isEmailConfirmed)
       throw new HttpException(

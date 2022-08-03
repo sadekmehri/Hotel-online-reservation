@@ -16,4 +16,6 @@ export class GetUserDto {
   isActive?: boolean
 
   isEmailConfirmed?: boolean
+
+  isAdmin?: boolean
 }

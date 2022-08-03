@@ -190,6 +190,7 @@ export class AuthService {
         dob: true,
         isActive: true,
         isEmailConfirmed: true,
+        isAdmin: true
       },
     })
   }
@@ -255,22 +256,6 @@ export class AuthService {
   async getAuthByEmail(email: string): Promise<UserModel> {
     const user = await this.prismaService.users.findUnique({
       where: { email },
-    })
-
-    // Check if user exists
-    if (!user)
-      throw new HttpException(
-        { message: `User does not exist!` },
-        HttpStatus.NOT_FOUND,
-      )
-
-    return user
-  }
-
-  /* Get auth details by giving id as param */
-  async getAuthById(id: number): Promise<UserModel> {
-    const user = await this.prismaService.users.findUnique({
-      where: { userId: id },
     })
 
     // Check if user exists
