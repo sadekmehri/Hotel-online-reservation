@@ -9,9 +9,11 @@ import { RoomTypeService } from '../services/room-type.service'
 export class RoomTypeController {
   constructor(private readonly roomTypeService: RoomTypeService) {}
 
-  // @desc      Get list of room types records
-  // @route     GET /room-types
-  // @access    Public
+  /**
+   * @desc      Get list of room types records
+   * @route     GET /room-types
+   * @access    Public
+   */
 
   @Public()
   @Get('/')

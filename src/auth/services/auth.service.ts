@@ -20,12 +20,8 @@ export class AuthService {
 
     // Check if the user's cin number exists or not
     const isUserExistByCin = await this.prismaService.users.findUnique({
-      where: {
-        cin,
-      },
-      select: {
-        cin: true,
-      },
+      where: { cin },
+      select: { cin: true },
     })
 
     if (isUserExistByCin)
@@ -36,12 +32,8 @@ export class AuthService {
 
     // Check if the user's mail address exists or not
     const isUserExistByEmail = await this.prismaService.users.findUnique({
-      where: {
-        email,
-      },
-      select: {
-        email: true,
-      },
+      where: { email },
+      select: { email: true },
     })
 
     if (isUserExistByEmail)
@@ -77,10 +69,8 @@ export class AuthService {
     const { email, password } = loginAuthDto
 
     // Check if the user's mail address exists or not
-    const user = await this.prismaService.users.findMany({
-      where: {
-        email,
-      },
+    const user = await this.prismaService.users.findUnique({
+      where: { email },
       select: {
         userId: true,
         email: true,
@@ -89,13 +79,13 @@ export class AuthService {
       },
     })
 
-    if (user.length !== 1)
+    if (!user)
       throw new HttpException(
         { message: `Email or password is incorrect!` },
         HttpStatus.BAD_REQUEST,
       )
 
-    const { userId, isActive, password: hashedPassword } = user[0]
+    const { userId, isActive, password: hashedPassword } = user
 
     // Check if the stored password matches with the given password
     const isPasswordMatching = await compareHashToText(password, hashedPassword)
@@ -114,11 +104,7 @@ export class AuthService {
       )
 
     // Eliminate password, isActive field
-    const {
-      password: string,
-      isActive: boolean,
-      ...otherFields
-    } = { ...user[0] }
+    const { password: string, isActive: boolean, ...otherFields } = { ...user }
     const userPayload: JwtPayload = otherFields
 
     // Get generated tokens
@@ -134,9 +120,7 @@ export class AuthService {
   async refreshToken(userId: number, refreshToken: string): Promise<Tokens> {
     // Check if the user exist with the given payload
     const user = await this.prismaService.users.findUnique({
-      where: {
-        userId,
-      },
+      where: { userId },
       select: {
         userId: true,
         email: true,
@@ -179,9 +163,7 @@ export class AuthService {
   /* Get auth user details */
   async getAuthInfo(userId: number): Promise<GetUserDto> {
     return await this.prismaService.users.findUnique({
-      where: {
-        userId,
-      },
+      where: { userId },
       select: {
         userId: true,
         firstName: true,
@@ -190,7 +172,7 @@ export class AuthService {
         dob: true,
         isActive: true,
         isEmailConfirmed: true,
-        isAdmin: true
+        isAdmin: true,
       },
     })
   }
@@ -200,13 +182,9 @@ export class AuthService {
     await this.prismaService.users.updateMany({
       where: {
         userId,
-        refreshToken: {
-          not: null,
-        },
+        refreshToken: { not: null },
       },
-      data: {
-        refreshToken: null,
-      },
+      data: { refreshToken: null },
     })
   }
 
@@ -243,19 +221,16 @@ export class AuthService {
     const hashedToken = await hash(refreshToken)
 
     await this.prismaService.users.update({
-      where: {
-        userId,
-      },
-      data: {
-        refreshToken: hashedToken,
-      },
+      where: { userId },
+      data: { refreshToken: hashedToken },
     })
   }
 
   /* Get auth information by email */
-  async getAuthByEmail(email: string): Promise<UserModel> {
+  async getAuthByEmail(email: string): Promise<{ isEmailConfirmed: boolean }> {
     const user = await this.prismaService.users.findUnique({
       where: { email },
+      select: { isEmailConfirmed: true },
     })
 
     // Check if user exists
@@ -271,12 +246,8 @@ export class AuthService {
   /* Mark auth email as confirmed */
   async markEmailAsConfirmed(email: string): Promise<UserModel> {
     return await this.prismaService.users.update({
-      where: {
-        email,
-      },
-      data: {
-        isEmailConfirmed: true,
-      },
+      where: { email },
+      data: { isEmailConfirmed: true },
     })
   }
 }

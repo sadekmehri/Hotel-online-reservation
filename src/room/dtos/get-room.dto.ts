@@ -1,3 +1,4 @@
+import { Transform } from 'class-transformer'
 import { GetRoomTypeDto } from 'src/room-type/dtos'
 
 export class GetRoomDto {
@@ -9,6 +10,7 @@ export class GetRoomDto {
 
   reserved: boolean
 
+  @Transform(({ value }) => value / 100)
   price: number
 
   readonly roomtypes: GetRoomTypeDto

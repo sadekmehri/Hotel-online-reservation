@@ -27,9 +27,11 @@ export class EmailConfirmationController {
     private readonly emailConfirmationService: EmailConfirmationService,
   ) {}
 
-  // @desc      Send confirmation link
-  // @route     POST /account/send-confirmation-link
-  // @access    Public
+  /**
+   * @desc      Send confirmation link
+   * @route     POST /account/send-confirmation-link
+   * @access    Public
+   */
 
   @Public()
   @Post('send-confirmation-link')
@@ -56,9 +58,11 @@ export class EmailConfirmationController {
     await this.emailConfirmationService.sendConfirmationProcess(email)
   }
 
-  // @desc      Verify account
-  // @route     POST /account/confirm?token={}
-  // @access    Public
+  /**
+   * @desc      Verify account
+   * @route     POST /account/confirm?token={}
+   * @access    Public
+   */
 
   @Public()
   @Get('confirm')
@@ -87,10 +91,12 @@ export class EmailConfirmationController {
     await this.emailConfirmationService.confirmEmail(email)
   }
 
-  // @desc      Resend confirmation link
-  // @route     POST /account/resend-confirmation-link
-  // @access    Private
-  // @role      User
+  /**
+   * @desc      Resend confirmation link
+   * @route     POST /account/resend-confirmation-link
+   * @access    Private
+   * @role      User
+   */
 
   @Post('resend-confirmation-link')
   @Roles(Role.USER)

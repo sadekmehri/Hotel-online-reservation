@@ -13,9 +13,7 @@ export class RoomTypeService {
         roomTypeId: true,
         name: true,
       },
-      orderBy: {
-        roomTypeId: 'desc',
-      },
+      orderBy: { roomTypeId: 'desc' },
     })
 
     // Check if there is no record
@@ -32,9 +30,7 @@ export class RoomTypeService {
   async getRoomTypeById(roomTypeId: number): Promise<GetRoomTypeDto> {
     // Check if room type exists by giving its id
     const roomType = await this.prismaService.roomtypes.findUnique({
-      where: {
-        roomTypeId,
-      },
+      where: { roomTypeId },
       select: {
         roomTypeId: true,
         name: true,

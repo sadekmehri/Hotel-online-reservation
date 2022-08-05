@@ -64,6 +64,54 @@ export class RoomService {
     return response
   }
 
+  /* Get room by id */
+  async getRoomById(roomId: number): Promise<GetRoomDto> {
+    // Check if the room exists by id
+    const room = await this.prismaService.rooms.findUnique({
+      where: { roomId },
+      select: {
+        roomId: true,
+        code: true,
+        price: true,
+        reserved: true,
+        status: true,
+        roomtypes: true,
+      },
+    })
+
+    if (!room)
+      throw new HttpException(
+        { message: `There is no room with this id: ${roomId}!` },
+        HttpStatus.NOT_FOUND,
+      )
+
+    return room
+  }
+
+  /* Get room by code */
+  async getRoomByCode(code: string): Promise<GetRoomDto> {
+    // Check if the room exists by code
+    const room = await this.prismaService.rooms.findUnique({
+      where: { code },
+      select: {
+        roomId: true,
+        code: true,
+        price: true,
+        reserved: true,
+        status: true,
+        roomtypes: true,
+      },
+    })
+
+    if (!room)
+      throw new HttpException(
+        { message: `There is no room with this code: ${code}!` },
+        HttpStatus.NOT_FOUND,
+      )
+
+    return room
+  }
+
   /* Create new room */
   async createRoom(createRoomDto: CreateRoomDto): Promise<GetRoomDto> {
     const { code, roomTypeId } = createRoomDto

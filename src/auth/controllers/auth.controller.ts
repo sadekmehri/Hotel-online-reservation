@@ -25,9 +25,11 @@ import { Tokens } from '../types'
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  // @desc      Register
-  // @route     POST /auth/register
-  // @access    Public
+  /**
+   * @desc      Register
+   * @route     POST /auth/register
+   * @access    Public
+   */
 
   @Public()
   @Post('/register')
@@ -51,9 +53,11 @@ export class AuthController {
     return this.authService.register(registerAuthDto)
   }
 
-  // @desc      Login
-  // @route     POST /auth/login
-  // @access    Public
+  /**
+   * @desc      Login
+   * @route     POST /auth/login
+   * @access    Public
+   */
 
   @Public()
   @HttpCode(HttpStatus.OK)
@@ -79,9 +83,11 @@ export class AuthController {
     return this.authService.login(loginAuthDto)
   }
 
-  // @desc      Refresh token
-  // @route     POST /auth/refresh
-  // @access    Private
+  /**
+   * @desc      Refresh token
+   * @route     POST /auth/refresh
+   * @access    Private
+   */
 
   @Post('/refresh')
   @HttpCode(HttpStatus.OK)
@@ -112,9 +118,11 @@ export class AuthController {
     return this.authService.refreshToken(userId, refreshToken)
   }
 
-  // @desc      Get auth information
-  // @route     POST /auth/me
-  // @access    Private
+  /**
+   * @desc      Get auth information
+   * @route     POST /auth/me
+   * @access    Private
+   */
 
   @Post('/me')
   @HttpCode(HttpStatus.OK)
@@ -139,9 +147,11 @@ export class AuthController {
     return this.authService.getAuthInfo(userId)
   }
 
-  // @desc      Logout
-  // @route     POST /auth/logout
-  // @access    Private
+  /**
+   * @desc      Logout
+   * @route     POST /auth/logout
+   * @access    Private
+   */
 
   @Post('/logout')
   @HttpCode(HttpStatus.OK)

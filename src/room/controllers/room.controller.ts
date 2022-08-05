@@ -4,9 +4,12 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  Param,
+  ParseIntPipe,
   Post,
   Query,
   UseInterceptors,
+  UsePipes,
 } from '@nestjs/common'
 import {
   ApiBearerAuth,
@@ -26,13 +29,16 @@ import { RoomService } from '../services/room.service'
 export class RoomController {
   constructor(private readonly roomService: RoomService) {}
 
-  // @desc      Get list of rooms
-  // @route     GET /rooms?page={}&limit={}
-  // @access    Public
+  /**
+   * @desc      Get list of rooms
+   * @route      GET /rooms?page={}&limit={}
+   * @access    Public
+   */
 
   @Public()
   @Get('/')
   @HttpCode(HttpStatus.OK)
+  @UseInterceptors(new TransformInterceptor(GetRoomDto))
   @ApiOperation({ summary: 'Get list of rooms feature' })
   @ApiResponse({
     status: HttpStatus.OK,
@@ -48,10 +54,65 @@ export class RoomController {
     return this.roomService.getRooms(props)
   }
 
-  // @desc      Create new room
-  // @route     Post /rooms/
-  // @access    Private
-  // @role      Admin
+  /**
+   * @desc      Get room by id
+   * @route      GET /rooms/:id
+   * @access    Public
+   */
+
+  @Public()
+  @Get('/:id')
+  @HttpCode(HttpStatus.OK)
+  @UsePipes(
+    new ParseIntPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE }),
+  )
+  @UseInterceptors(new TransformInterceptor(GetRoomDto))
+  @ApiOperation({ summary: 'Get room by id feature' })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Get room by a given id',
+  })
+  @ApiResponse({
+    status: HttpStatus.NOT_ACCEPTABLE,
+    description: 'the id param should be integer',
+  })
+  @ApiResponse({
+    status: HttpStatus.NOT_FOUND,
+    description: 'There is no room with this given id',
+  })
+  getRoomById(@Param('id') id: number): Promise<GetRoomDto> {
+    return this.roomService.getRoomById(id)
+  }
+
+  /**
+   * @desc      Get room by id
+   * @route     GET /rooms/code/:code
+   * @access    Public
+   */
+
+  @Public()
+  @Get('/code/:code')
+  @HttpCode(HttpStatus.OK)
+  @UseInterceptors(new TransformInterceptor(GetRoomDto))
+  @ApiOperation({ summary: 'Get room by code feature' })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Get room by a given code',
+  })
+  @ApiResponse({
+    status: HttpStatus.NOT_FOUND,
+    description: 'There is no room with this given code',
+  })
+  getRoomByCode(@Param('code') code: string): Promise<GetRoomDto> {
+    return this.roomService.getRoomByCode(code)
+  }
+
+  /**
+   * @desc      Create new room
+   * @route     Post /rooms
+   * @access    Private
+   * @role      Admin
+   */
 
   @Post('/')
   @Roles(Role.ADMIN)

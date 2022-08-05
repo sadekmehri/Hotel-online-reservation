@@ -3,7 +3,7 @@ import {
   BadRequestException,
   HttpException,
   HttpStatus,
-  Injectable
+  Injectable,
 } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
 import { AuthService } from 'src/auth/services/auth.service'
@@ -17,12 +17,12 @@ export class EmailConfirmationService {
     private readonly jwtService: JwtService,
     private readonly emailService: EmailService,
     private readonly authService: AuthService,
-  ) { }
+  ) {}
 
   /* Send verification link throw email */
   async sendVerificationLink(email: string): Promise<void> {
     const payload: VerificationTokenPayload = { email }
-    
+
     const token = await this.generateToken(payload)
 
     const options: ISendMailOptions = {
@@ -53,7 +53,9 @@ export class EmailConfirmationService {
 
   /* Resend confirmation request */
   async resendConfirmationLink(userId: number): Promise<void> {
-    const { isEmailConfirmed, email } = await this.authService.getAuthInfo(userId)
+    const { isEmailConfirmed, email } = await this.authService.getAuthInfo(
+      userId,
+    )
 
     if (isEmailConfirmed)
       throw new HttpException(
@@ -80,7 +82,12 @@ export class EmailConfirmationService {
   /* Decode token after clicking confirm link */
   async decodeConfirmationToken(token: string): Promise<string> {
     try {
-      const payload = <VerificationTokenPayload>await this.jwtService.verify(token, { secret: Jwt.EMAIL_TOKEN_SECRET })
+      const payload = <VerificationTokenPayload>await this.jwtService.verify(
+        token,
+        {
+          secret: Jwt.EMAIL_TOKEN_SECRET,
+        },
+      )
 
       if ('email' in payload) return payload.email
 
